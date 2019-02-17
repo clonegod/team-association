@@ -1,0 +1,146 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>clonegod</groupId>
+	<artifactId>learn-mavan</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>learn-mavan</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<java.version>1.8</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.checkstyle.version>2.17</maven.checkstyle.version>
+		<maven.jxr.version>3.0.0</maven.jxr.version>
+	</properties>
+	
+	<!-- 多环境配置 -->
+	<profiles>
+		<!-- 开发环境 -->
+		<profile>
+			<id>dev</id>
+			<properties>
+				<env>dev</env>
+				<swagger.enable>true</swagger.enable>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		</profile>
+		 <!--测试环境 -->
+		<profile>
+			<id>test</id>
+			<properties>
+				<env>test</env>
+				<swagger.enable>true</swagger.enable>
+			</properties>
+		</profile>
+		 <!-- 生产环境 -->
+		<profile>
+			<id>prod</id>
+			<properties>
+				<env>prod</env>
+				<swagger.enable>false</swagger.enable>
+			</properties>
+		</profile>
+	</profiles>
+	
+	
+	<build>
+        <resources>
+        	<!-- 拷贝多套环境共用的资源文件 -->
+            <resource>
+            	<directory>src/main/resources</directory>
+            	<includes>
+            		<include>*.properties</include>
+            		<include>*.xml</include>
+            	</includes>
+            	<filtering>true</filtering>
+            </resource>
+            <!-- 拷贝激活的profile下的资源文件 -->
+            <resource>
+            	<directory>src/main/resources/${env}</directory>
+            	<includes>
+            		<include>**/*.properties</include>
+            		<include>**/*.xml</include>
+            	</includes>
+            	<filtering>true</filtering>
+            </resource>
+        </resources>
+		
+		<plugins>
+			<!-- java源代码编译插件 -->
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.0</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+					<encoding>${project.build.sourceEncoding}</encoding>
+				</configuration>
+			</plugin>
+			
+			<!-- java资源文件拷贝插件 -->
+			<plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-resources-plugin</artifactId>
+		        <version>3.1.0</version>
+		        <configuration>
+		          <encoding>UTF-8</encoding>
+		          <useDefaultDelimiters>true</useDefaultDelimiters>
+		        </configuration>
+		     </plugin>
+			
+			<!-- find bugs -->
+			<plugin>
+			  <groupId>com.github.spotbugs</groupId>
+			  <artifactId>spotbugs-maven-plugin</artifactId>
+			  <version>3.1.10</version>
+			  <dependencies>
+			    <!-- overwrite dependency on spotbugs if you want to specify the version of spotbugs -->
+			    <dependency>
+			      <groupId>com.github.spotbugs</groupId>
+			      <artifactId>spotbugs</artifactId>
+			      <version>3.1.11</version>
+			    </dependency>
+			  </dependencies>
+			</plugin>
+			<!-- end -->
+			
+		</plugins>
+	</build>
+
+	<reporting>
+	
+		<!-- checkstyle + jxr 生成样式报告 -->
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>${maven.checkstyle.version}</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jxr-plugin</artifactId>
+				<version>${maven.jxr.version}</version>
+			</plugin>
+		</plugins>
+		<!-- end -->
+		
+	</reporting>
+
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.10</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	
+</project>
